@@ -1,0 +1,100 @@
+{% comment %} {% load inlinecss %} {% inlinecss "transfers/styling.css" %} {% endcomment %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Potwierdzenie</title>
+    {% comment %}
+    <style>
+      /* -------------------------------------
+            THESE STYLES HAVE TO BE IN THE HEAD
+        ------------------------------------- */
+      @media all {
+        .ExternalClass {
+          width: 100%;
+        }
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+          line-height: 100%;
+        }
+        .apple-link a {
+          color: inherit !important;
+          font-family: inherit !important;
+          font-size: inherit !important;
+          font-weight: inherit !important;
+          line-height: inherit !important;
+          text-decoration: none !important;
+        }
+        #MessageViewBody a {
+          color: inherit;
+          text-decoration: none;
+          font-size: inherit;
+          font-family: inherit;
+          font-weight: inherit;
+          line-height: inherit;
+        }
+        .btn-primary table td:hover {
+          background-color: #1d82eb !important;
+        }
+        .btn-primary a:hover {
+          background-color: #1d82eb !important;
+          border-color: #1d82eb !important;
+        }
+      }
+    </style>
+    .preheader {
+      margin-bottom: 20px;
+    }
+    {% endcomment %}
+  </head>
+  <body class="">
+    <span class="preheader"
+      >Potwierdzenie przelewu z dnia {{transfer_date}}</span
+    >
+    <table
+      role="presentation"
+      border="0"
+      cellpadding="0"
+      cellspacing="0"
+      class="body"
+    >
+      <tr>
+        <td>&nbsp;</td>
+        <td class="container">
+          <div class="content">
+            <!-- START CENTERED WHITE CONTAINER -->
+            <table role="presentation" class="details-table">
+              <!-- START MAIN CONTENT AREA -->
+              <tr>
+                <td>Data</td>
+                <td>{{transfer_date}}</td>
+              </tr>
+              <tr>
+                <td>Nadawca</td>
+                <td>{{sender}}</td>
+              </tr>
+              <tr>
+                <td>Odbiorca</td>
+                <td>{{recipient}}</td>
+              </tr>
+              <tr>
+                <td>Kwota</td>
+                <td>{{amount}}</td>
+              </tr>
+              <!-- END MAIN CONTENT AREA -->
+            </table>
+            <!-- END CENTERED WHITE CONTAINER -->
+          </div>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+  </body>
+</html>
+{% comment %} {% endinlinecss %} {% endcomment %}
