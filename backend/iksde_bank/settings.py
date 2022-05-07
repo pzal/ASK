@@ -41,6 +41,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     # "rest_framework_filters",
+    "social_django",
     "storages",
 ]
 
@@ -164,6 +165,25 @@ REST_FRAMEWORK = {
 }
 
 ELK_STACK_ON = os.environ["ELK_STACK_ON"] == "true"
+
+# Social auth
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.keycloak.KeycloakOAuth2',
+    'django.contrib.auth.backends.ModelBackend'
+)
+SOCIAL_AUTH_KEYCLOAK_KEY = 'django-oidc'
+SOCIAL_AUTH_KEYCLOAK_SECRET = 'BlXlgyYZXcCGPCn7ckgcCQBUrUEElJ2Y'
+SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoSf7EO+ZIZjRDTQtzYpRzkrH2yU8TyrwEAws81Cnoe1kdkqZhxAj6GeX9JX5JMyw9SzEx+e7ZA/xhfxU/0L/NPaCfpfajP8jSXABKdUyHCOFPeqJVyl0WQn3sLwMClkKZKLmngZ1Q65+2MVgN9CshhhkyAthmKGhhH74FPCHuH+zu9J2NzKqHTQfQxC1nbTAwmwUgLPlYTOGk1WugK/YGsaV3ITn4GGdBkQc+e58DaHW6sMPYlZgr1A7Y+3sabigXNifo9EhEL3wBb+zRn1YIdXmcsB+nyW0QTTRAqaY87l5ttFXhXn4G1vtmaubFlNNTDqLdGslg+3V3OCqKolPywIDAQAB'
+SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = \
+    'http://localhost:8080/realms/myrealm/protocol/openid-connect/auth'
+SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = \
+    'http://keycloak:8080/realms/myrealm/protocol/openid-connect/token'
+
+LOGIN_REDIRECT_URL = '/development/whoami'
+LOGOUT_REDIRECT_URL = '/development/whoami'
+
+
 
 LOGGING = {
     "version": 1,

@@ -17,6 +17,9 @@ recreate_migrations:
 sp:
 	docker-compose run api python manage.py shell_plus
 
+bash:
+	docker-compose run api bash
+
 migrate:
 	docker-compose run api python manage.py migrate
 

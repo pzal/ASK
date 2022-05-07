@@ -14,9 +14,12 @@ urlpatterns = (
     + [
         path("users/", include("users.urls")),
         path("transfers/", include("transfers.urls")),
+        path("", include("social_django.urls", namespace="social")),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 )  # TODO Not suitable for production
 
 if settings.DEBUG:
-    urlpatterns.append(path("development/", include("development.urls")),)
+    urlpatterns.append(
+        path("development/", include("development.urls")),
+    )
