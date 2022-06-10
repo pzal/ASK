@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Collapse from '@material-ui/core/Collapse'
 import CloseIcon from '@material-ui/icons/Close'
 import styled from 'styled-components'
-import {apiPost} from '../utils/api'
+import {apiPost, _apiGet} from '../utils/api'
 import {setEmailInCookie, setApiKeyInCookie} from '../utils/cookies'
 
 const useStyles = makeStyles(theme => ({
@@ -53,7 +53,34 @@ function LoginPage() {
   const [email, setEmail] = React.useState<any>('admin@example.com')
   const [password, setPassword] = React.useState('secret')
 
+  const onRegister = () => {
+    window.location.assign('http://localhost:8080/realms/myrealm/login-actions/registration?next=http://localhost:3000')
+  }
   const onSave = () => {
+    window.location.assign('http://localhost:8000/login/keycloak?next=http://localhost:3000')
+    // _apiGet({url: `/users/me/`})
+    //   .then(res => {
+    //     console.log('res', res)
+    //   })
+    //   .catch(err => {
+    //     console.log('err', err)
+    //   })
+    // _apiGet({url: `/development/whoami`})
+    //   .then(res => {
+    //     console.log('res', res)
+    //   })
+    //   .catch(err => {
+    //     console.log('err', err)
+    //   })
+    // apiPost(`/development/whoami/`, {})
+    //   .then(res => {
+    //     console.log('res', res)
+    //   })
+    //   .catch(err => {
+    //     console.log('err', err)
+    //   })
+
+    return
     setShowSuccess(false)
     setShowFailure(false)
 
@@ -87,7 +114,7 @@ function LoginPage() {
         <div className={classes.toolbar} />
         <ContentWrapper>
           <Grid container direction="column" spacing={2}>
-            <Grid item>
+            {/* <Grid item>
               <TextField
                 id="filled-helperText"
                 label="Email"
@@ -111,7 +138,7 @@ function LoginPage() {
                 fullWidth
                 variant="filled"
               />
-            </Grid>
+            </Grid> */}
             <Grid item>
               <Button
                 onClick={onSave}
@@ -122,6 +149,16 @@ function LoginPage() {
                 Zaloguj
               </Button>
             </Grid>
+            {/* <Grid item>
+              <Button
+                onClick={onRegister}
+                variant="contained"
+                color="primary"
+                size="large"
+              >
+                Rejestracja
+              </Button>
+            </Grid> */}
             <Grid item>
               <Collapse in={showSuccess}>
                 <Alert

@@ -6,6 +6,8 @@ services:
     environment:
       - KEYCLOAK_ADMIN_PASSWORD=admin
       - KEYCLOAK_ADMIN=admin
+    volumes:
+      - keycloak_data:/opt/keycloak/data
     ports:
       - 8080:8080
   api:
@@ -86,3 +88,4 @@ volumes:
   tmp_data:
   postgres_data:
   redis_data:
+  keycloak_data:

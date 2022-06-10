@@ -18,7 +18,11 @@ TESTING = sys.argv[1:2] == ["test"]
 AUTH_USER_MODEL = "users.User"
 
 # ALLOWED_HOSTS = os.environ["ALLOWED_HOSTS"].split(",")
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost"]
+# ALLOWED_HOSTS = ["*"]
+SESSION_COOKIE_DOMAIN = ".localhost"
+CORS_ALLOW_CREDENTIALS = True
+CSRF_USE_SESSIONS = True
 # CORS_ORIGIN_WHITELIST = [os.environ["LANDING_ENDPOINT"], os.environ["APP_ENDPOINT"]]
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -149,16 +153,23 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     # "DEFAULT_FILTER_BACKENDS": ("rest_framework_filters.backends.RestFrameworkFilterBackend",),
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
+        # "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "EXCEPTION_HANDLER": "utils.exceptions.custom_exception_handler",
@@ -169,20 +180,81 @@ ELK_STACK_ON = os.environ["ELK_STACK_ON"] == "true"
 # Social auth
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.keycloak.KeycloakOAuth2',
-    'django.contrib.auth.backends.ModelBackend'
+    "social_core.backends.keycloak.KeycloakOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
 )
-SOCIAL_AUTH_KEYCLOAK_KEY = 'django-oidc'
-SOCIAL_AUTH_KEYCLOAK_SECRET = 'BlXlgyYZXcCGPCn7ckgcCQBUrUEElJ2Y'
-SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoSf7EO+ZIZjRDTQtzYpRzkrH2yU8TyrwEAws81Cnoe1kdkqZhxAj6GeX9JX5JMyw9SzEx+e7ZA/xhfxU/0L/NPaCfpfajP8jSXABKdUyHCOFPeqJVyl0WQn3sLwMClkKZKLmngZ1Q65+2MVgN9CshhhkyAthmKGhhH74FPCHuH+zu9J2NzKqHTQfQxC1nbTAwmwUgLPlYTOGk1WugK/YGsaV3ITn4GGdBkQc+e58DaHW6sMPYlZgr1A7Y+3sabigXNifo9EhEL3wBb+zRn1YIdXmcsB+nyW0QTTRAqaY87l5ttFXhXn4G1vtmaubFlNNTDqLdGslg+3V3OCqKolPywIDAQAB'
-SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = \
-    'http://localhost:8080/realms/myrealm/protocol/openid-connect/auth'
-SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = \
-    'http://keycloak:8080/realms/myrealm/protocol/openid-connect/token'
+SOCIAL_AUTH_KEYCLOAK_KEY = "django-oidc"
+SOCIAL_AUTH_KEYCLOAK_SECRET = "jD7qAc3IOLecQNxyrrM5PFets3D02bJK"
+SOCIAL_AUTH_KEYCLOAK_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgKfPbqFx5BYl6sxgsmiJZ4w5hIkAGOBld7UvaW+0vH/mAT+ngU8WI9OryN2NvEXcSNwAsbkd4bd9fOkVGaHt1KXGZUsyajy5A4tZrq9vVxY0aSGAKYHstzfiuJiznIP1TlInv3kngclbVUHFZ5CXUMpkZIEsbBdkmGhUTR3ZdTBWjq56fCSbq6B7md91R7I2VSm4hhJ2t+77WS4y+dwenzV0zpLU+Sygl2br0SvBV0Yc15SYHCt5JRXdxOQ4rZbbhhGruNsoWg4s2dqDLCDooyfu06fIYIsv1mNLvnJKpU2tEfxLzrR4lltNyil581tRmhXbss9Kt7nLde+5mxxbowIDAQAB"
+SOCIAL_AUTH_KEYCLOAK_AUTHORIZATION_URL = (
+    "http://localhost:8080/realms/myrealm/protocol/openid-connect/auth"
+)
+SOCIAL_AUTH_KEYCLOAK_ACCESS_TOKEN_URL = (
+    "http://keycloak:8080/realms/myrealm/protocol/openid-connect/token"
+)
+SOCIAL_AUTH_ALLOWED_REDIRECT_HOSTS = ["localhost:8000", "localhost:3000"]
 
-LOGIN_REDIRECT_URL = '/development/whoami'
-LOGOUT_REDIRECT_URL = '/development/whoami'
 
+def custom_create_user(*args, **kwargs):
+    from social_core.pipeline.user import create_user
+    from users.models import Account
+    from time import time
+    from faker import Faker
+
+    data = create_user(*args, **kwargs)
+
+    if not data["is_new"]:
+        print("here not new")
+        return data
+
+    user = data["user"]
+
+    # Setup
+    fake = Faker()
+    Faker.seed(time())
+    Account.objects.create(user=user, balance=1000000, account_number=fake.iban())
+
+    return data
+
+
+SOCIAL_AUTH_PIPELINE = (
+    # Get the information we can about the user and return it in a simple
+    # format to create the user instance later. In some cases the details are
+    # already part of the auth response from the provider, but sometimes this
+    # could hit a provider API.
+    "social_core.pipeline.social_auth.social_details",
+    # Get the social uid from whichever service we're authing thru. The uid is
+    # the unique identifier of the given user in the provider.
+    "social_core.pipeline.social_auth.social_uid",
+    # Verifies that the current auth process is valid within the current
+    # project, this is where emails and domains whitelists are applied (if
+    # defined).
+    "social_core.pipeline.social_auth.auth_allowed",
+    # Checks if the current social-account is already associated in the site.
+    "social_core.pipeline.social_auth.social_user",
+    # Make up a username for this person, appends a random string at the end if
+    # there's any collision.
+    "social_core.pipeline.user.get_username",
+    # Send a validation email to the user to verify its email address.
+    # Disabled by default.
+    # 'social_core.pipeline.mail.mail_validation',
+    # Associates the current social details with another user account with
+    # a similar email address. Disabled by default.
+    # 'social_core.pipeline.social_auth.associate_by_email',
+    # Create a user account if we haven't found one yet.
+    "iksde_bank.settings.custom_create_user",
+    # Create the record that associates the social account with the user.
+    "social_core.pipeline.social_auth.associate_user",
+    # Populate the extra_data field in the social record with the values
+    # specified by settings (and the default ones like access_token, etc).
+    "social_core.pipeline.social_auth.load_extra_data",
+    # Update the user record with any changed info from the auth service.
+    "social_core.pipeline.user.user_details",
+)
+
+
+LOGIN_REDIRECT_URL = "/development/whoami"
+LOGOUT_REDIRECT_URL = "/development/whoami"
 
 
 LOGGING = {
@@ -199,7 +271,10 @@ LOGGING = {
             #   'tags': ['tag1', 'tag2'], # list of tags. Default: None.
         }
         if ELK_STACK_ON
-        else {"level": "DEBUG", "class": "logging.StreamHandler",},
+        else {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
     },
     "loggers": {
         "django.request": {

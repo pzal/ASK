@@ -70,27 +70,27 @@ function App() {
     `${process.env.REACT_APP_API_URL}/users/me/`,
     // Deferred so that we don't fire again
     // when we get `apiKey` for the first time.
-    true,
+    // true,
   )
 
-  React.useEffect(() => {
-    if (apiKey) {
-      // Potentially logged in, but we have to check if it's valid.
+  // React.useEffect(() => {
+  //   if (apiKey) {
+  //     // Potentially logged in, but we have to check if it's valid.
 
-      if (authState === AUTH_STATE.LOGGED_OUT) {
-        // Means we have been at the login screen.
-        // So the token pretty much must be valid.
-        setAuthState(AUTH_STATE.LOGGED_IN)
-      } else {
-        // Let's see if we get any client for that token.
-        console.log('Reloading app: checking if new apiKey allows us to login.')
-        run()
-      }
-    } else {
-      // No apiKey, no chance.
-      setAuthState(AUTH_STATE.LOGGED_OUT)
-    }
-  }, [apiKey])
+  //     if (authState === AUTH_STATE.LOGGED_OUT) {
+  //       // Means we have been at the login screen.
+  //       // So the token pretty much must be valid.
+  //       setAuthState(AUTH_STATE.LOGGED_IN)
+  //     } else {
+  //       // Let's see if we get any client for that token.
+  //       console.log('Reloading app: checking if new apiKey allows us to login.')
+  //       run()
+  //     }
+  //   } else {
+  //     // No apiKey, no chance.
+  //     setAuthState(AUTH_STATE.LOGGED_OUT)
+  //   }
+  // }, [apiKey])
 
   React.useEffect(() => {
     console.log('got data', data, error, isRejected)

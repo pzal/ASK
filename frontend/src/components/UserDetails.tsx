@@ -81,7 +81,8 @@ export default function UserDetails() {
 
   const logout = () => {
     console.log('logging out')
-    setApiKeyInCookie(undefined)
+    // setApiKeyInCookie(undefined)
+    window.location.assign('http://localhost:8000/development/logout/?next=http://localhost:3000/')
   }
 
   if (isPending) {
